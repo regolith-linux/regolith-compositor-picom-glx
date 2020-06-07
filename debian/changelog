@@ -1,0 +1,5 @@
+regolith-compositor-picom-glx (1.0.0-1) bionic; urgency=medium
+
+  * Initial release
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Sun, 07 Jun 2020 14:49:34 -0700

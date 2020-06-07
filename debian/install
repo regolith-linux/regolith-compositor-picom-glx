@@ -1,0 +1,2 @@
+init usr/share/regolith-compositor/
+config etc/regolith/picom/

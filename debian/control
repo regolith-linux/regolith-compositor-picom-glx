@@ -1,0 +1,18 @@
+Source: regolith-compositor-picom-glx
+Section: x11
+Priority: optional
+Maintainer: Ken Gilmer <kgilmer@gmail.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: https://github.com/regolith-linux/regolith-desktop
+Vcs-Git: https://github.com/regolith-linux/regolith-compositor-picom-glx.git
+
+Package: regolith-compositor-picom-glx
+Architecture: any
+Depends: ${misc:Depends}, picom
+Provides: regolith-compositor
+Conflicts: regolith-compositor, regolith-picom-config
+Replaces: regolith-compositor, regolith-picom-config
+Description: Regolith configuration for picom
+ Default configuration for Regolith compositor using picom compositor
+ before name change, and using the glx backend.
