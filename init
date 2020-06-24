@@ -1,6 +1,6 @@
 #!/bin/bash
 # See https://regolith-linux.org/docs/customize/compositors/
-if [[ -f "$HOME/.config/regolith/pico/config" ]]; then
+if [[ -f "$HOME/.config/regolith/picom/config" ]]; then
   /usr/bin/picom -f --config $HOME/.config/regolith/picom/config
 else
   /usr/bin/picom -f --config /etc/regolith/picom/config
