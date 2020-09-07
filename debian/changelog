@@ -1,3 +1,11 @@
+regolith-compositor-picom-glx (1.1.1-1) bionic; urgency=medium
+
+  [ Ken Gilmer ]
+  * Fix typo found in https://github.com/regolith-linux/regolith-compositor-picom-glx/issues/1.
+  * Init script will kill pre-existing app instance before starting new. Part of fix for https://github.com/regolith-linux/regolith-desktop/issues/475.
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Mon, 07 Sep 2020 13:56:47 -0700
+
 regolith-compositor-picom-glx (1.0.1-1) bionic; urgency=medium
 
   [ Ken Gilmer ]
