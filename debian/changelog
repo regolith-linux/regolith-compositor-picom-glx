@@ -1,3 +1,10 @@
+regolith-compositor-picom-glx (1.1.3-1) bionic; urgency=medium
+
+  [ Ken Gilmer ]
+  * Remove manual fade flag passed to compositor in favor of specification in config file, to address https://github.com/regolith-linux/regolith-compositor-picom-glx/issues/3.
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Sun, 03 Jan 2021 12:33:20 -0800
+
 regolith-compositor-picom-glx (1.1.2-1) bionic; urgency=medium
 
   [ Ken Gilmer ]
