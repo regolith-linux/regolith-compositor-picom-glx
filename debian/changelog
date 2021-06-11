@@ -1,3 +1,10 @@
+regolith-compositor-picom-glx (1.2.0-1) bionic; urgency=medium
+
+  [ Ken Gilmer ]
+  * Update to use @Filip-K picom config from https://github.com/regolith-linux/regolith-desktop/issues/578.
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Thu, 10 Jun 2021 21:02:03 -0700
+
 regolith-compositor-picom-glx (1.1.3-1) bionic; urgency=medium
 
   [ Ken Gilmer ]
