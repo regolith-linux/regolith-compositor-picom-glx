@@ -1,3 +1,11 @@
+regolith-compositor-picom-glx (1.2.1-1) UNRELEASED; urgency=medium
+
+  [ Ken Gilmer ]
+  * Do not fade ilia
+  * Add build automation
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Sat, 29 Jan 2022 09:56:44 -0800
+
 regolith-compositor-picom-glx (1.2.0-1) bionic; urgency=medium
 
   [ Ken Gilmer ]
