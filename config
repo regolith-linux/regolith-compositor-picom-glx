@@ -43,7 +43,7 @@ glx-no-rebind-pixmap = true;
 
 use-damage = true;
 
-# Additionally use X Sync fence to sync clients' draw calls. 
+# Additionally use X Sync fence to sync clients' draw calls.
 # Needed on nvidia-drivers with GLX backend for some users.
 xrender-sync-fence = true;
 
@@ -138,7 +138,9 @@ fade-out-step = 0.03;
 # no-fading-openclose = true;
 
 # Specify a list of conditions of windows that should not be faded.
-fade-exclude = [ ];
+fade-exclude = [
+    "name *= 'ilia'"
+];
 
 #################################
 #
@@ -215,13 +217,13 @@ wintypes:
     };
     dock = { shadow = true; }
     dnd = { shadow = false; }
-    popup_menu = { 
-        opacity = 1.0; 
+    popup_menu = {
+        opacity = 1.0;
         shadow = false;
         fade = false;
     }
-    dropdown_menu = { 
-        opacity = 1.0; 
+    dropdown_menu = {
+        opacity = 1.0;
         fade = false;
     }
 };

@@ -14,5 +14,3 @@ if [[ -f "$HOME/.config/regolith/picom/config" ]]; then
 else
   /usr/bin/picom --config /etc/regolith/picom/config
 fi
-
-
