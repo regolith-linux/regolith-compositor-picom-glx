@@ -1,3 +1,10 @@
+regolith-compositor-picom-glx (1.2.2-1) focal; urgency=medium
+
+  [ Ken Gilmer ]
+  * Add new name for zoom window
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Wed, 02 Feb 2022 20:01:42 -0800
+
 regolith-compositor-picom-glx (1.2.1-1) focal; urgency=medium
 
   [ Ken Gilmer ]

@@ -82,6 +82,7 @@ shadow-exclude = [
     "name *= 'compton'",
     "name *= 'picom'",
     "name *= 'cpt_frame_window'",
+    "name *= 'cpt_frame_xcb_window'",
     "name *= 'wrapper-2.0'",
     "class_g = 'Conky'",
     "class_g = 'Kupfer'",
