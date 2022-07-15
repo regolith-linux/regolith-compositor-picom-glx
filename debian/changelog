@@ -1,3 +1,10 @@
+regolith-compositor-picom-glx (1.2.4) focal; urgency=medium
+
+  [ Ken Gilmer ]
+  * Allow config to be specified by Xres. Relates to https://github.com/regolith-linux/regolith-look-extra/pull/8
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Fri, 15 Jul 2022 07:22:34 -0700
+
 regolith-compositor-picom-glx (1.2.3-1) focal; urgency=medium
 
   [ Ken Gilmer ]
