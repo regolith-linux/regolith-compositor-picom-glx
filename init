@@ -12,5 +12,6 @@ done
 if [[ -f "$HOME/.config/regolith2/picom/config" ]]; then
   /usr/bin/picom --config "$HOME/.config/regolith2/picom/config"
 else
-  /usr/bin/picom --config /etc/regolith/picom/config
+  CONFIG_PATH=$(xrescat regolith.compositor.picom.config /etc/regolith/picom/config)
+  /usr/bin/picom --config "$CONFIG_PATH"
 fi
