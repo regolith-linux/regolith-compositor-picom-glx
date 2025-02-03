@@ -1,3 +1,18 @@
+regolith-compositor-picom-glx (1.4.0) focal; urgency=medium
+
+  [ Regolith Linux ]
+  * fix: error spamming syslog
+
+  [ Khosrow Moossavi ]
+  * chore: remove obsolete package broadcast action
+  * feat: enable github action to test pull requests
+  * feat: enable github action to publish to unstable
+  * feat: enable github action to publish to testing
+  * feat: enable github action to prepare release
+  * fix: create release tag from correct git sha
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Mon, 03 Feb 2025 21:00:10 +0000
+
 regolith-compositor-picom-glx (1.3.0) focal; urgency=medium
 
   [ Matt Fisher ]
