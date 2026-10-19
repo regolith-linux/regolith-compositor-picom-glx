@@ -1,0 +1,5 @@
+#!/bin/sh
+# The compositor launcher must pass shellcheck.
+set -eu
+shellcheck /usr/share/regolith-compositor/init
+echo "ok: shellcheck /usr/share/regolith-compositor/init"

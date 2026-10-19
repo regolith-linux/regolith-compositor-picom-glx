@@ -1,0 +1,36 @@
+#!/bin/sh
+# The shipped config must load in whichever picom the release installs
+# (Regolith's 11.2.4 build, or the distribution's 12.x or 13.x) without
+# config errors and without deprecation warnings, apart from the c2 type and
+# format specifiers that picom 11 still needs and picom 12+ ignores.
+set -eu
+
+config=/etc/regolith/picom/config
+log="${AUTOPKGTEST_TMP:-$(mktemp -d)}/picom-diagnostics.log"
+
+echo "picom $(picom --version)"
+if ! xvfb-run -a -s "-screen 0 1280x800x24 +extension GLX +extension Composite" \
+        picom --config "$config" --diagnostics > "$log" 2>&1; then
+    cat "$log"
+    echo "FAIL: picom rejected $config"
+    exit 1
+fi
+cat "$log"
+
+fail=0
+if ! grep -q "Config file used: $config" "$log"; then
+    echo "FAIL: picom did not load $config"
+    fail=1
+fi
+# Messages from the config file and window rule parsers and the option checks.
+# Backend messages (no vsync or EGL under Xvfb) are not about the config.
+problems=$(grep -E '(parse_config[a-z_]*|c2_parse[a-z_]*|report_deprecated_option|sanitize_options) (WARN|ERROR|FATAL)|FATAL' "$log" \
+           | grep -v -E 'c2_parse_target WARN \] (Type|Format) specifier is deprecated' || true)
+if [ -n "$problems" ]; then
+    printf '%s\n' "$problems"
+    echo "FAIL: $config has config problems in picom $(picom --version)"
+    fail=1
+else
+    echo "ok: $config loads in picom $(picom --version) without config problems"
+fi
+exit $fail

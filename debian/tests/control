@@ -1,0 +1,13 @@
+Tests: shellcheck
+Depends: regolith-compositor-picom-glx,
+         shellcheck
+Restrictions: superficial
+
+Tests: picom-config
+Depends: regolith-compositor-picom-glx,
+         libegl-mesa0,
+         libegl1,
+         picom,
+         xauth,
+         xvfb
+Restrictions: allow-stderr

@@ -3,7 +3,9 @@
 
 compositor_PID=$(pidof picom)
 
-while [ ! -z "$compositor_PID" ]; do
+while [ -n "$compositor_PID" ]; do
+  # pidof may print several PIDs; kill each of them.
+  # shellcheck disable=SC2086
   kill $compositor_PID
   sleep .1
   compositor_PID=$(pidof picom)
