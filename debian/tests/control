@@ -5,6 +5,8 @@ Restrictions: superficial
 
 Tests: picom-config
 Depends: regolith-compositor-picom-glx,
+         libegl-mesa0,
+         libegl1,
          picom,
          xauth,
          xvfb
