@@ -1,0 +1,18 @@
+[Unit]
+Description=Regolith compositor (picom)
+Documentation=man:picom(1)
+# Started by /usr/share/regolith-compositor/init from the i3 config; stopped
+# with the graphical session.
+PartOf=graphical-session.target
+# Give up after repeated crashes; init clears this on the next start.
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+EnvironmentFile=%t/regolith-compositor-picom.env
+ExecStart=/usr/share/regolith-compositor/init --foreground
+# Start picom again after a crash or SIGKILL. A plain kill or pkill (SIGTERM)
+# is a clean stop and keeps it stopped.
+Restart=on-failure
+RestartSec=2

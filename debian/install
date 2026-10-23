@@ -1,2 +1,3 @@
 init usr/share/regolith-compositor/
 config etc/regolith/picom/
+regolith-compositor-picom.service usr/lib/systemd/user/

@@ -1,0 +1,77 @@
+#!/bin/sh
+# init must run picom through regolith-compositor-picom.service when a systemd
+# user manager is there, so that picom is started again after a crash, and
+# start picom as a daemon otherwise. A stub systemctl records what init asks
+# the user manager to do.
+set -eu
+
+unit=/usr/lib/systemd/user/regolith-compositor-picom.service
+tmp=${AUTOPKGTEST_TMP:-$(mktemp -d)}
+stub="$tmp/stub"
+mkdir -p "$stub" "$tmp/run"
+cat > "$stub/systemctl" <<'STUB'
+#!/bin/sh
+echo "systemctl $*" >> "$STUB_LOG"
+if [ "$*" = "--user start regolith-compositor-picom.service" ]; then
+    exit "$STUB_START_RC"
+fi
+exit 0
+STUB
+chmod +x "$stub/systemctl"
+fail=0
+
+echo "systemd-analyze verify $unit"
+if ! systemd-analyze verify --man=no "$unit"; then
+    echo "FAIL: $unit does not verify"
+    fail=1
+fi
+grep -qx 'Restart=on-failure' "$unit" || { echo "FAIL: $unit does not restart picom"; fail=1; }
+
+# run_init <case> <XDG_RUNTIME_DIR or empty> <exit status of systemctl start>:
+# run init on a fresh Xvfb display with an X resource database, as in a
+# Regolith session, and report the systemctl calls, the environment file and
+# the picom processes it leaves behind.
+run_init() {
+    log="$tmp/$1.log"
+    : > "$log"
+    rm -f "$tmp/run/regolith-compositor-picom.env"
+    STUB_LOG="$log" STUB_START_RC="$3" XDG_RUNTIME_DIR="$2" PATH="$stub:$PATH" \
+        xvfb-run -a -s "-noreset -screen 0 1280x800x24 +extension GLX +extension Composite" \
+        sh -c 'echo "regolith.test: 1" | xrdb -nocpp -merge;
+               /usr/share/regolith-compositor/init; sleep 2;
+               echo "display $DISPLAY" >> "$STUB_LOG";
+               echo "picom $(pidof picom || true)" >> "$STUB_LOG"; pkill -x picom || true' \
+        > "$tmp/$1.out" 2>&1 || true
+}
+
+check() { # check <case> <description> <command...>
+    c=$1; d=$2; shift 2
+    if "$@"; then
+        echo "ok: $c: $d"
+    else
+        echo "FAIL: $c: $d"
+        sed 's/^/    /' "$tmp/$c.log" "$tmp/$c.out"
+        fail=1
+    fi
+}
+
+run_init service "$tmp/run" 0
+line() { grep -n -x -m1 "systemctl --user $2 regolith-compositor-picom.service" "$tmp/$1.log" | cut -d: -f1; }
+check service "stops the service before it starts it again" \
+    test "$(line service stop)" -lt "$(line service start)"
+check service "hands the display to the service" \
+    sh -c "grep -qx \"DISPLAY=\$(sed -n 's/^display //p' '$tmp/service.log')\" '$tmp/run/regolith-compositor-picom.env'"
+check service "does not start picom itself" \
+    grep -q -x "picom " "$tmp/service.log"
+
+run_init start-fails "$tmp/run" 1
+check start-fails "starts picom as a daemon when the service does not start" \
+    grep -q -E "^picom [0-9]+" "$tmp/start-fails.log"
+
+run_init no-manager "" 0
+check no-manager "does not use the service without XDG_RUNTIME_DIR" \
+    sh -c "! grep -q 'systemctl --user st' '$tmp/no-manager.log'"
+check no-manager "starts picom as a daemon" \
+    grep -q -E "^picom [0-9]+" "$tmp/no-manager.log"
+
+exit $fail
