@@ -11,3 +11,16 @@ Depends: regolith-compositor-picom-glx,
          xauth,
          xvfb
 Restrictions: allow-stderr
+
+Tests: compositor-service
+Depends: regolith-compositor-picom-glx,
+         libegl-mesa0,
+         libegl1,
+         picom,
+         procps,
+         systemd,
+         x11-xserver-utils,
+         xauth,
+         xrescat,
+         xvfb
+Restrictions: allow-stderr

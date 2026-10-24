@@ -1,5 +1,34 @@
 #!/bin/bash
 # See https://regolith-linux.org/docs/customize/compositors/
+#
+# The window manager runs this at startup and on every reload or restart (which
+# is how regolith-look refresh applies a new look), so it replaces any running
+# picom. With a systemd user manager, picom runs in the user service
+# regolith-compositor-picom.service, which starts it again if it crashes.
+# Without one, picom is started as a daemon as before.
+#
+# init --foreground runs picom in the foreground (used by the service).
+
+UNIT=regolith-compositor-picom.service
+
+picom_config() {
+  if [[ -f "$HOME/.config/regolith3/picom/config" ]]; then
+    echo "$HOME/.config/regolith3/picom/config"
+  else
+    xrescat regolith.compositor.picom.config /etc/regolith/picom/config
+  fi
+}
+
+if [[ "${1-}" == "--foreground" ]]; then
+  exec /usr/bin/picom --config "$(picom_config)"
+fi
+
+use_unit=
+if [[ -n "${XDG_RUNTIME_DIR-}" && -n "${DISPLAY-}" ]] \
+    && systemctl --user cat "$UNIT" >/dev/null 2>&1; then
+  use_unit=1
+  systemctl --user stop "$UNIT"
+fi
 
 compositor_PID=$(pidof picom)
 
@@ -11,9 +40,21 @@ while [ -n "$compositor_PID" ]; do
   compositor_PID=$(pidof picom)
 done
 
-if [[ -f "$HOME/.config/regolith3/picom/config" ]]; then
-  /usr/bin/picom --config "$HOME/.config/regolith3/picom/config" --daemon
-else
-  CONFIG_PATH=$(xrescat regolith.compositor.picom.config /etc/regolith/picom/config)
-  /usr/bin/picom --config "$CONFIG_PATH" --daemon
+if [[ -n "$use_unit" ]]; then
+  # Hand this display to the service, not to the whole user manager.
+  env_file="$XDG_RUNTIME_DIR/regolith-compositor-picom.env"
+  (
+    umask 077
+    echo "DISPLAY=$DISPLAY"
+    if [[ -n "${XAUTHORITY-}" ]]; then
+      echo "XAUTHORITY=$XAUTHORITY"
+    fi
+  ) > "$env_file"
+  # Clear a start limit hit by earlier crashes.
+  systemctl --user reset-failed "$UNIT" 2>/dev/null
+  if systemctl --user start "$UNIT"; then
+    exit 0
+  fi
 fi
+
+/usr/bin/picom --config "$(picom_config)" --daemon
