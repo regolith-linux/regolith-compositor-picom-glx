@@ -19,8 +19,25 @@ picom_config() {
   fi
 }
 
+# picom's glx backend does not repaint window contents on Mesa's software
+# renderers (llvmpipe, softpipe), which is what a VM without 3D acceleration
+# (QXL/SPICE, std VGA, virtio-gpu without virgl) gets: new windows, workspace
+# switches and closed windows don't show up, so key bindings seem to do
+# nothing (yshui/picom#1030). Use the xrender backend there. Prints the extra
+# picom arguments; set regolith.compositor.picom.software_fallback to false
+# to keep the configured backend.
+picom_args() {
+  [[ "$(xrescat regolith.compositor.picom.software_fallback true)" == "true" ]] || return 0
+  if /usr/bin/picom --config "$1" --diagnostics 2>/dev/null \
+      | grep -q '^\* Accelerated: 0'; then
+    echo "--backend xrender"
+  fi
+}
+
 if [[ "${1-}" == "--foreground" ]]; then
-  exec /usr/bin/picom --config "$(picom_config)"
+  config=$(picom_config)
+  # shellcheck disable=SC2046
+  exec /usr/bin/picom --config "$config" $(picom_args "$config")
 fi
 
 use_unit=
@@ -57,4 +74,6 @@ if [[ -n "$use_unit" ]]; then
   fi
 fi
 
-/usr/bin/picom --config "$(picom_config)" --daemon
+config=$(picom_config)
+# shellcheck disable=SC2046
+/usr/bin/picom --config "$config" $(picom_args "$config") --daemon
