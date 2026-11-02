@@ -24,3 +24,14 @@ Depends: regolith-compositor-picom-glx,
          xrescat,
          xvfb
 Restrictions: allow-stderr
+
+Tests: compositor-other-user
+Depends: regolith-compositor-picom-glx,
+         libegl-mesa0,
+         libegl1,
+         picom,
+         procps,
+         x11-xserver-utils,
+         xrescat,
+         xvfb
+Restrictions: needs-root, allow-stderr

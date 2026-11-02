@@ -1,0 +1,55 @@
+#!/bin/sh
+# init replaces the user's own picom only. With two users logged in, the
+# other user's picom can't be signalled, and init used to retry killing it
+# forever instead of starting a compositor for its own display. Root runs a
+# picom on one display; init runs as nobody for another display.
+set -eu
+
+tmp=${AUTOPKGTEST_TMP:-$(mktemp -d)}
+fail=0
+Xvfb :91 -screen 0 1280x800x24 +extension GLX +extension Composite -ac -noreset -nolisten tcp \
+    > "$tmp/xvfb-91.log" 2>&1 &
+xvfb_root=$!
+Xvfb :92 -screen 0 1280x800x24 +extension GLX +extension Composite -ac -noreset -nolisten tcp \
+    > "$tmp/xvfb-92.log" 2>&1 &
+xvfb_user=$!
+trap 'pkill -x picom || true; kill "$xvfb_root" "$xvfb_user" 2>/dev/null || true' EXIT
+for _ in $(seq 50); do
+    [ -S /tmp/.X11-unix/X91 ] && [ -S /tmp/.X11-unix/X92 ] && break
+    sleep .1
+done
+
+# An X resource database, as in a Regolith session
+echo "regolith.test: 1" | DISPLAY=:92 xrdb -nocpp -merge
+
+DISPLAY=:91 picom --config /etc/regolith/picom/config --backend xrender --daemon \
+    > "$tmp/picom-root.log" 2>&1
+root_picom=$(pgrep -u 0 -x picom)
+echo "root picom: $root_picom"
+
+rc=0
+setpriv --reuid=nobody --regid=nogroup --clear-groups \
+    env -i PATH="$PATH" HOME=/nonexistent DISPLAY=:92 \
+    timeout 20 /usr/share/regolith-compositor/init > "$tmp/init.log" 2>&1 || rc=$?
+sleep 2
+cat "$tmp/init.log"
+
+if [ "$rc" -eq 0 ]; then
+    echo "ok: init returns while another user runs picom"
+else
+    echo "FAIL: init exited $rc (124: still waiting for the other user's picom)"
+    fail=1
+fi
+if kill -0 "$root_picom" 2>/dev/null; then
+    echo "ok: the other user's picom keeps running"
+else
+    echo "FAIL: the other user's picom was stopped"
+    fail=1
+fi
+if pgrep -u nobody -x picom > /dev/null; then
+    echo "ok: init started picom for its own display"
+else
+    echo "FAIL: init did not start picom"
+    fail=1
+fi
+exit $fail

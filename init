@@ -47,15 +47,28 @@ if [[ -n "${XDG_RUNTIME_DIR-}" && -n "${DISPLAY-}" ]] \
   systemctl --user stop "$UNIT"
 fi
 
-compositor_PID=$(pidof picom)
+# Replace only this user's picom. Another user's picom (another session on
+# the machine) can't be signalled and is not ours to replace; waiting for it
+# to exit would never end. Give up waiting after 5 seconds and kill what is
+# left, so a picom that ignores SIGTERM can't block startup either.
+own_picom() {
+  pgrep -u "$(id -u)" -x picom
+}
 
-while [ -n "$compositor_PID" ]; do
-  # pidof may print several PIDs; kill each of them.
+compositor_PID=$(own_picom)
+tries=0
+while [[ -n "$compositor_PID" ]] && (( tries++ < 50 )); do
+  # pgrep may print several PIDs; kill each of them.
   # shellcheck disable=SC2086
-  kill $compositor_PID
+  kill $compositor_PID 2>/dev/null
   sleep .1
-  compositor_PID=$(pidof picom)
+  compositor_PID=$(own_picom)
 done
+if [[ -n "$compositor_PID" ]]; then
+  # shellcheck disable=SC2086
+  kill -s KILL $compositor_PID 2>/dev/null
+  sleep .1
+fi
 
 if [[ -n "$use_unit" ]]; then
   # Hand this display to the service, not to the whole user manager.
