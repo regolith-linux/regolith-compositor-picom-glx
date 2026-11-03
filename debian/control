@@ -9,7 +9,7 @@ Vcs-Git: https://github.com/regolith-linux/regolith-compositor-picom-glx.git
 
 Package: regolith-compositor-picom-glx
 Architecture: any
-Depends: ${misc:Depends}, picom
+Depends: ${misc:Depends}, picom, procps
 Provides: regolith-compositor
 Conflicts: regolith-compositor, regolith-picom-config
 Replaces: regolith-compositor, regolith-picom-config
