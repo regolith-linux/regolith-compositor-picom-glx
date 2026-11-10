@@ -1,5 +1,5 @@
 #!/bin/bash
-# See https://regolith-linux.org/docs/customize/compositors/
+# See https://regolith-desktop.com/docs/howtos/customize-compositor/
 #
 # The window manager runs this at startup and on every reload or restart (which
 # is how regolith-look refresh applies a new look), so it replaces any running
