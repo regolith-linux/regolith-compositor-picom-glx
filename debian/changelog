@@ -1,3 +1,15 @@
+regolith-compositor-picom-glx (1.4.1-1) focal; urgency=medium
+
+  [ rego-port-bot ]
+  * fix: keep the config free of deprecated options on picom 12 and 13
+  * test: install EGL for the picom-config autopkgtest
+  * fix: start picom again after it crashes
+  * fix: use the xrender backend on software renderers
+  * fix: replace only this user's picom in init
+  * fix: point the init comment at the current compositor docs
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Wed, 11 Nov 2026 11:31:24 -0800
+
 regolith-compositor-picom-glx (1.4.0-1) focal; urgency=medium
 
   [ Khosrow Moossavi ]
